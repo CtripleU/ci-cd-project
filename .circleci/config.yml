@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  slack: circleci/slack@4.1
+  slack: circleci/slack@4.10.1
 # commands:
 #   destroy-environment:
 #     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -34,18 +34,6 @@ orbs:
 #             fi
             
 jobs:
-  deploy:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/install-packages
-      - run:
-          command: npm run deploy
-      - slack/notify:
-          channel: C03DAJYL3SM
-          event: fail
-          template: basic_fail_1
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -137,6 +125,14 @@ jobs:
             cd backend
             npm install
             npm audit fix --audit-level=critical
+      - slack/notify:
+          channel: C03DAJYL3SM
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          channel: C03DAJYL3SM
+          event: pass
+          template: basic_success_1
 
 #   deploy-infrastructure:
 #     docker:
@@ -313,12 +309,11 @@ workflows:
       #     # requires: [build-frontend]
       # - test-backend
           # requires: [build-backend]
-      - scan-backend
+      - scan-backend:
+          context: udacity
           # requires: [build-backend]
       # - scan-frontend
           # requires: [build-frontend]
-      - deploy:
-          context: udacity
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
