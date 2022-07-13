@@ -50,7 +50,6 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm audit fix --audit-level=critical           
             npm build
             # exit 1
       - save_cache:
@@ -69,9 +68,8 @@ jobs:
           command: |
              cd backend
              npm install
-             npm audit fix --audit-level=critical
              npm run build
-            #  exit 1
+             exit 1
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
