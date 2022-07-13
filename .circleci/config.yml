@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  node: circleci/node:13.8.0
+  node: circleci/node@4.1
   slack: circleci/slack@4.1
 # commands:
 #   destroy-environment:
@@ -319,6 +319,7 @@ workflows:
       # - scan-frontend
           # requires: [build-frontend]
       - deploy:
+          app-dir: "backend/"
           context: udacity
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
