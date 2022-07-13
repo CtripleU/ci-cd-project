@@ -16,7 +16,7 @@ commands:
           when: on_fail
           command: |
             echo "Destroying environment: << parameters.workflow_id >> "
-            exit 1
+            # exit 1
 
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
