@@ -221,9 +221,9 @@ jobs:
           command: |
             cd backend
             npm install
-            # npm audit fix --audit-level=critical
+            npm audit fix --audit-level=critical
             npm run migrations > migrations_dump.txt
-            no_output_timeout: 30m
+            # no_output_timeout: 30m
             # exit 1
       - run:
           name: Send migration results to kvdb.io
