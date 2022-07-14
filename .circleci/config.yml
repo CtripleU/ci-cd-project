@@ -301,7 +301,7 @@ jobs:
             aws --version
       - run:
           name: Deploy backend
-          no_output_timeout: 30m
+          # no_output_timeout: 30m
           command: |
             cd backend
             npm i
