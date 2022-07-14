@@ -302,6 +302,7 @@ jobs:
       - run:
           name: Deploy backend
           command: |
+            no_output_timeout: 30m
             cd backend
             npm i
             npm run build
