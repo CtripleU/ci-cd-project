@@ -28,7 +28,7 @@
     become: true
     command: pm2 start npm -- start
     args:
-      chdir: /home/ubuntu/udapeople
+      chdir: /home/ubuntu/udapeople/dist
 
     environment:
      ENVIRONMENT: production
@@ -38,7 +38,7 @@
      TYPEORM_ENTITIES: "./modules/domain/**/*.entity.js"
      TYPEORM_HOST: "{{ lookup('env', 'TYPEORM_HOST') }}"
      TYPEORM_PORT: "{{ lookup('env', 'TYPEORM_PORT') }}"
-     ANSIBLE_HOST_KEY_CHECKING: False
+     ANSIBLE_HOST_KEY_CHECKING: false
      TYPEORM_USERNAME: "{{ lookup('env', 'TYPEORM_USERNAME') }}"
      TYPEORM_PASSWORD: "{{ lookup('env', 'TYPEORM_PASSWORD') }}"
      TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE') }}"
