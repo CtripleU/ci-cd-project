@@ -288,7 +288,7 @@ jobs:
       - add_ssh_keys: 
           fingerprints: ["df:c7:14:cb:b3:3d:33:57:c3:63:7c:27:cb:7e:47:51"]
       - attach_workspace:
-          at: .
+          at: ~/
       - run: 
           name: View content of inventory.txt
           command: cat .circleci/ansible/inventory.txt 
@@ -307,7 +307,10 @@ jobs:
             npm i
             npm run build
             cd ..
-            tar -C backend -czvf artifact.tar.gz .
+            tar -C backend -czvf artifact.tar.gz . 2>/dev/null
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            cp ~/project/backend/.env .circleci/ansible/roles/deploy/files/backend.env
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
