@@ -317,10 +317,10 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible tar gzip curl aws-cli rsync openssh nodejs npm
+            apk add --update ansible tar gzip curl rsync openssh nodejs npm
             apk add --update npm
             ansible --version
-            # pip install awscli
+            pip install awscli
             aws --version
       - run:
           name: Deploy backend
