@@ -448,8 +448,8 @@ jobs:
               echo ${STACKS}
               echo ${OldWorkflowID}
               echo "Deleting s3 bucket:      s3://udapeople-${OldWorkflowID}"
-              echo "Deleting backend stack:  udapeople-backend-<< parameters.workflow_id >>"
-              echo "Deleting frontend stack: udapeople-frontend-<< parameters.workflow_id >>"
+              echo "Deleting backend stack:  udapeople-backend-{OldWorkflowID}"
+              echo "Deleting frontend stack: udapeople-frontend-{OldWorkflowID}"
               if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
               then
                 aws s3 rm "s3://udapeople-${OldWorkflowID}" --force
