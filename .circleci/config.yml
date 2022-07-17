@@ -247,7 +247,7 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm install
+            npm install --legacy-peer-deps
             npm run build
             npm audit fix --audit-level=critical
             npm run migrations > migrations_dump.txt
