@@ -11,6 +11,10 @@ commands:
       workflow_id:
         type: string
         default: '${CIRCLE_WORKFLOW_ID:0:7}'
+<<<<<<< HEAD
+=======
+  
+>>>>>>> 35559573259a8672a8e2bad95995bcb946670c99
     steps:
       - run:
           name: Destroy environments ${CIRCLE_WORKFLOW_ID:0:7}
@@ -28,7 +32,11 @@ commands:
     parameters:
       workflow_id:
         type: string
+<<<<<<< HEAD
         default: '${CIRCLE_WORKFLOW_ID:0:7}'            
+=======
+        default: '${CIRCLE_WORKFLOW_ID:0:7}'     
+>>>>>>> 35559573259a8672a8e2bad95995bcb946670c99
     steps:
       - run:
           name: Revert migrations
@@ -451,6 +459,17 @@ jobs:
         - checkout
         # - attach_workspace:
         #     at: ~/
+        - run:
+            name: Install dependencies
+            command: |
+              yum install tar -y
+              yum install gzip -y
+              yum install python3-pip -y
+              yum -y install curl -y
+              curl --silent --location https://rpm.nodesource.com/setup_14.x | bash -
+              yum install -y nodejs
+        - attach_workspace:
+            at: ~/
         - run:
             name: Get old stack workflow id
             command: |
