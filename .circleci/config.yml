@@ -9,7 +9,8 @@ commands:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
       workflow_id:
-        type: string   
+        type: string
+        default: '${CIRCLE_WORKFLOW_ID:0:7}'
     steps:
       - run:
           name: Destroy environments ${CIRCLE_WORKFLOW_ID:0:7}
@@ -26,7 +27,8 @@ commands:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
       workflow_id:
-        type: string     
+        type: string
+        default: '${CIRCLE_WORKFLOW_ID:0:7}'            
     steps:
       - run:
           name: Revert migrations
@@ -413,20 +415,30 @@ jobs:
             #   --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             #   --tags project=udapeople
 
-            export OldWorkflowID=$(aws cloudformation \
-              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-              --no-paginate --output text) 
-              echo $OldWorkflowID >> ~/OldWorkflowID.txt
-              cat ~/OldWorkflowID.txt            
+            # export OldWorkflowID=$(aws cloudformation \
+            #   list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+            #   --no-paginate --output text) 
+            #   echo $OldWorkflowID >> ~/OldWorkflowID.txt
+            #   cat ~/OldWorkflowID.txt            
+            # aws cloudformation deploy \
+            #   --template-file .circleci/files/cloudfront.yml \
+            #   --stack-name InitialStack \
+            #   --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+            #   --tags project=udapeople
+
+            export OldWorkflowID=$(aws cloudformation list-exports \
+            --query "Exports[?Name==\`WorkflowID\`].Value" \
+            --no-paginate --output text)
             aws cloudformation deploy \
-              --template-file .circleci/files/cloudfront.yml \
-              --stack-name InitialStack \
-              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
-              --tags project=udapeople
-      - persist_to_workspace:
-          root: ~/
-          paths: 
-            - OldWorkflowID.txt
+            --template-file .circleci/files/cloudfront.yml \
+            --stack-name InitialStack \
+            --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
+            --tags project=udapeople
+
+      # - persist_to_workspace:
+      #     root: ~/
+      #     paths: 
+      #       - OldWorkflowID.txt
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:
@@ -437,24 +449,37 @@ jobs:
         - image: amazon/aws-cli
       steps:
         - checkout
-        - attach_workspace:
-            at: ~/
+        # - attach_workspace:
+        #     at: ~/
         - run:
             name: Get old stack workflow id
             command: |
-              export OldWorkflowID=`cat ~/OldWorkflowID.txt`
-              export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-              echo ${STACKS}
-              echo ${OldWorkflowID}
-              echo "Deleting s3 bucket:      s3://udapeople-${OldWorkflowID}"
-              echo "Deleting backend stack:  udapeople-backend-{OldWorkflowID}"
-              echo "Deleting frontend stack: udapeople-frontend-{OldWorkflowID}"
+              # export OldWorkflowID=`cat ~/OldWorkflowID.txt`
+              # export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              #   --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+              # echo ${STACKS}
+              # echo ${OldWorkflowID}
+              # echo "Deleting s3 bucket:      s3://udapeople-${OldWorkflowID}"
+              # echo "Deleting backend stack:  udapeople-backend-{OldWorkflowID}"
+              # echo "Deleting frontend stack: udapeople-frontend-{OldWorkflowID}"
+              # if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+              # then
+              #   aws s3 rm "s3://udapeople-${OldWorkflowID}" --force
+              #   aws cloudformation delete-stack --stack-name udapeople-backend-{OldWorkflowID} 
+              #   aws cloudformation delete-stack --stack-name udapeople-frontend-{OldWorkflowID}
+              # fi
+
+              echo <<pipeline.parameters.workflow_id>>
+              export OldWorkflowID=<<pipeline.parameters.workflow_id>>
+              export STACKS=$(aws cloudformation list-stacks \
+              --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
               if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
               then
-                aws s3 rm "s3://udapeople-${OldWorkflowID}" --force
-                aws cloudformation delete-stack --stack-name udapeople-backend-{OldWorkflowID} 
-                aws cloudformation delete-stack --stack-name udapeople-frontend-{OldWorkflowID}
+                echo "----------cleaning up stacks------------"
+                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
               fi
 workflows:
   default:
@@ -487,5 +512,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update] 
+      # - cleanup:
+      #     requires: [cloudfront-update] 
