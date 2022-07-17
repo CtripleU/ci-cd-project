@@ -447,19 +447,27 @@ jobs:
             name: Remove old stacks and files
             command: |
               # cat ~/OldWorkflowID.txt
-              echo "@@@OldWorkflowID: ${OldWorkflowID}" 
-              echo "CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID}"
-              echo "STACKS: ${STACKS[@]}"
-              if "${STACKS[@]}" != "${OldWorkflowID}"
+              # echo "@@@OldWorkflowID: ${OldWorkflowID}" 
+              # echo "CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID}"
+              # echo "STACKS: ${STACKS[@]}"
+              # if "${STACKS[@]}" != "${OldWorkflowID}"
+              # then
+              #   echo ------------ Removed Old Stacks --------------
+              #   aws s3 rm "s3://udapeoplefrontend-${OldWorkflowID}" --recursive
+              #   aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              #   aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+              # else
+              #   echo ------------ Unable to Remove Old Stacks --------------
+              # fi            
+
+              if [[ "$CurrentWorkflowID" != "$OldWorkflowID" ]]
               then
-                echo ------------ Removed Old Stacks --------------
-                aws s3 rm "s3://udapeoplefrontend-${OldWorkflowID}" --recursive
+                aws s3 rm "s3://udapeoplefrontend${OldWorkflowID}" --recursive
                 aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
                 aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
               else
-                echo ------------ Unable to Remove Old Stacks --------------
-              fi            
-
+                echo "$OldWorkflowID==$CurrentWorkflowID => nothing needs to be done..."
+              fi
 workflows:
   default:
     jobs:
